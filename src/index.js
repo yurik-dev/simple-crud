@@ -4,10 +4,12 @@ const formEl = document.getElementById('contact-form');
 const contactListContainerEl = document.getElementById(
   'contact-list-container',
 );
+const searchFormEl = document.getElementById('search-form');
 
 const contacts = [];
 
 formEl.addEventListener('submit', handleSubmit);
+searchFormEl.addEventListener('input', handleSearch);
 
 /**
  * @param {Event} event
@@ -16,9 +18,19 @@ function handleSubmit(event) {
   event.preventDefault();
 
   addContact();
-  renderContact();
+  renderContact(contacts);
 }
 
+/**
+ * @param {Event} event
+ */
+function handleSearch(event) {
+  event.preventDefault();
+
+  const query = event.target.value
+
+  searchContact(query)
+}
 /**
  * @returns {Contact}
  */
@@ -39,10 +51,10 @@ function addContact() {
   contacts.push(contact);
 }
 
-function renderContact() {
+function renderContact(data) {
   contactListContainerEl.textContent = '';
 
-  contacts.forEach((contact) => createContactListElements(contact));
+  data.forEach((contact) => createContactListElements(contact));
 }
 
 /**
@@ -98,7 +110,7 @@ function deleteContact(id) {
   }
 
   contacts.splice(index, 1);
-  renderContact();
+  renderContact(contacts);
 }
 
 function updateContact(id, editedContact) {
@@ -108,5 +120,13 @@ function updateContact(id, editedContact) {
   }
 
   contacts[index] = editedContact;
-  renderContact();
+  renderContact(contacts);
+}
+
+function searchContact(query) {
+  const filtered = contacts.filter((contact) => {
+    return Object.values(contact).some((value) => value.toString().toLowerCase().includes(query.toLowerCase()));
+  })
+
+  renderContact(filtered);
 }
