@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple CRUD</title>
+  </head>
+  <body>
+    <h1>Simple CRUD Demo</h1>
+    <form id="contact-form" method="post">
+      <label for="name">Name</label>
+      <input type="text" name="name" placeholder="John Doe" required />
+      <label for="age">Age</label>
+      <input type="number" name="age" placeholder="30" required />
+      <label for="phone">Phone</label>
+      <input type="text" name="phone" placeholder="123 456 789" required />
+      <label for="email">Email</label>
+      <input
+        type="email"
+        name="email"
+        placeholder="WkqQe@example.com"
+        required
+      />
+      <button type="submit">Add</button>
+    </form>
+    <div id="contact-list-container"></div>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
