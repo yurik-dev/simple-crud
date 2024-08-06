@@ -45,6 +45,9 @@ function renderContact() {
   contacts.forEach((contact) => createContactListElements(contact));
 }
 
+/**
+ * @param {Contact[]} data
+ */
 function createContactListElements(data) {
   const contactListEl = document.createElement('div');
   contactListEl.id = data.id;
@@ -66,7 +69,30 @@ function createContactListElements(data) {
 
   const deleteBtn = document.createElement('button');
   deleteBtn.textContent = 'Delete';
+  deleteBtn.addEventListener('click', () => {
+    deleteContact(contactListEl.id);
+  })
 
   contactListEl.append(nameEl, ageEl, phoneEl, emailEl, editBtn, deleteBtn);
   contactListContainerEl.append(contactListEl);
+}
+
+/**
+ * @param {string} id
+ */
+function findContactIndex(id) {
+  return contacts.findIndex((element) => element.id === id);
+}
+
+/**
+ * @param {string} id
+ */
+function deleteContact(id) {
+  const index = findContactIndex(id);
+  if (index === -1) {
+    throw new Error(`contact with id ${id} not found`);
+  }
+
+  contacts.splice(index, 1);
+  renderContact();
 }
