@@ -66,6 +66,10 @@ function createContactListElements(data) {
 
   const editBtn = document.createElement('button');
   editBtn.textContent = 'Edit';
+  editBtn.addEventListener('click', () => {
+    const editedContact = getFormData();
+    updateContact(contactListEl.id, editedContact);
+  })
 
   const deleteBtn = document.createElement('button');
   deleteBtn.textContent = 'Delete';
@@ -94,5 +98,15 @@ function deleteContact(id) {
   }
 
   contacts.splice(index, 1);
+  renderContact();
+}
+
+function updateContact(id, editedContact) {
+  const index = findContactIndex(id);
+  if (index === -1) {
+    throw new Error(`contact with id ${id} not found`);
+  }
+
+  contacts[index] = editedContact;
   renderContact();
 }
