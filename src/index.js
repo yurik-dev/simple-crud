@@ -1,4 +1,8 @@
 import { addData, contacts, deleteData, updateData } from './model/model.js';
+import {
+  loadDataFromLocalStorage,
+  saveDataToLocalStorage,
+} from './model/storage.js';
 import { generateUUID } from './utils/helper.js';
 
 const formEl = document.getElementById('contact-form');
@@ -7,8 +11,15 @@ const contactListContainerEl = document.getElementById(
 );
 const searchFormEl = document.getElementById('search-form');
 
-formEl.addEventListener('submit', handleSubmit);
-searchFormEl.addEventListener('input', handleSearch);
+document.addEventListener('DOMContentLoaded', init)
+
+function init() {
+  loadDataFromLocalStorage();
+  renderContact(contacts);
+
+  formEl.addEventListener('submit', handleSubmit);
+  searchFormEl.addEventListener('input', handleSearch);
+}
 
 /**
  * @param {Event} event
@@ -18,6 +29,9 @@ function handleSubmit(event) {
 
   addContact();
   renderContact(contacts);
+  saveDataToLocalStorage(contacts);
+
+  event.target.reset()
 }
 
 /**
@@ -49,7 +63,7 @@ function getFormData() {
 function addContact() {
   let newContact = getFormData();
 
-  addData(newContact)
+  addData(newContact);
 }
 
 function renderContact(data) {
@@ -114,17 +128,24 @@ function deleteContact(data, id) {
     throw new Error(`contact with id ${id} not found`);
   }
 
-  deleteData(index)
+  deleteData(index);
+  saveDataToLocalStorage(data)
   renderContact(data);
 }
 
+/**
+ * @param {Contact[]} data
+ * @param {string} id
+ * @param {Contact} edited
+ */
 function updateContact(data, id, editedContact) {
   const index = findContactIndex(data, id);
   if (index === -1) {
     throw new Error(`contact with id ${id} not found`);
   }
 
-  updateData(index, editedContact)
+  updateData(index, editedContact);
+  saveDataToLocalStorage(data)
   renderContact(data);
 }
 
