@@ -1,3 +1,4 @@
+import { addData, contacts, deleteData, updateData } from './model/model.js';
 import { generateUUID } from './utils/helper.js';
 
 const formEl = document.getElementById('contact-form');
@@ -5,8 +6,6 @@ const contactListContainerEl = document.getElementById(
   'contact-list-container',
 );
 const searchFormEl = document.getElementById('search-form');
-
-const contacts = [];
 
 formEl.addEventListener('submit', handleSubmit);
 searchFormEl.addEventListener('input', handleSearch);
@@ -27,10 +26,11 @@ function handleSubmit(event) {
 function handleSearch(event) {
   event.preventDefault();
 
-  const query = event.target.value
+  const query = event.target.value;
 
-  searchContact(query)
+  searchContact(contacts, query);
 }
+
 /**
  * @returns {Contact}
  */
@@ -47,86 +47,97 @@ function getFormData() {
 }
 
 function addContact() {
-  let contact = getFormData();
-  contacts.push(contact);
+  let newContact = getFormData();
+
+  addData(newContact)
 }
 
 function renderContact(data) {
   contactListContainerEl.textContent = '';
 
-  data.forEach((contact) => createContactListElements(contact));
+  data.forEach((contact) => createContactListElements(data, contact));
 }
 
 /**
- * @param {Contact[]} data
+ * @param {Contact[]} source - point to model data
+ * @param {Contact} contact
  */
-function createContactListElements(data) {
+function createContactListElements(data, contact) {
   const contactListEl = document.createElement('div');
-  contactListEl.id = data.id;
+  contactListEl.id = contact.id;
 
   const nameEl = document.createElement('p');
-  nameEl.textContent = `Name: ${data.name}`;
+  nameEl.textContent = `Name: ${contact.name}`;
 
   const ageEl = document.createElement('p');
-  ageEl.textContent = `Age: ${data.age}`;
+  ageEl.textContent = `Age: ${contact.age}`;
 
   const phoneEl = document.createElement('p');
-  phoneEl.textContent = `Phone: ${data.phone}`;
+  phoneEl.textContent = `Phone: ${contact.phone}`;
 
   const emailEl = document.createElement('p');
-  emailEl.textContent = `Email: ${data.email}`;
+  emailEl.textContent = `Email: ${contact.email}`;
 
   const editBtn = document.createElement('button');
   editBtn.textContent = 'Edit';
   editBtn.addEventListener('click', () => {
     const editedContact = getFormData();
-    updateContact(contactListEl.id, editedContact);
-  })
+    updateContact(data, contactListEl.id, editedContact);
+  });
 
   const deleteBtn = document.createElement('button');
   deleteBtn.textContent = 'Delete';
   deleteBtn.addEventListener('click', () => {
-    deleteContact(contactListEl.id);
-  })
+    deleteContact(data, contactListEl.id);
+  });
 
   contactListEl.append(nameEl, ageEl, phoneEl, emailEl, editBtn, deleteBtn);
   contactListContainerEl.append(contactListEl);
 }
 
 /**
+ * @param {Contact[]} data
  * @param {string} id
+ * @returns {number}
  */
-function findContactIndex(id) {
-  return contacts.findIndex((element) => element.id === id);
+function findContactIndex(data, id) {
+  return data.findIndex((element) => element.id === id);
 }
 
 /**
+ * @param {Contact[]} data
  * @param {string} id
  */
-function deleteContact(id) {
-  const index = findContactIndex(id);
+function deleteContact(data, id) {
+  const index = findContactIndex(data, id);
   if (index === -1) {
     throw new Error(`contact with id ${id} not found`);
   }
 
-  contacts.splice(index, 1);
-  renderContact(contacts);
+  deleteData(index)
+  renderContact(data);
 }
 
-function updateContact(id, editedContact) {
-  const index = findContactIndex(id);
+function updateContact(data, id, editedContact) {
+  const index = findContactIndex(data, id);
   if (index === -1) {
     throw new Error(`contact with id ${id} not found`);
   }
 
-  contacts[index] = editedContact;
-  renderContact(contacts);
+  updateData(index, editedContact)
+  renderContact(data);
 }
 
-function searchContact(query) {
-  const filtered = contacts.filter((contact) => {
-    return Object.values(contact).some((value) => value.toString().toLowerCase().includes(query.toLowerCase()));
-  })
+/**
+ * @param {Contact[]} data
+ * @param {string} keyword
+ */
+function searchContact(data, keyword) {
+  const filtered = data.filter((contact) => {
+    return Object.values(contact).some((value) =>
+      value.toString().toLowerCase().includes(keyword.toLowerCase()),
+    );
+  });
 
   renderContact(filtered);
 }
